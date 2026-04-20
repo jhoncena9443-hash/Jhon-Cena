@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useMemo, ChangeEvent } from 'react';
-import { Plus, Trash2, Printer, Building2, User, FileText, IndianRupee } from 'lucide-react';
+import { useState, useMemo, ChangeEvent, useRef } from 'react';
+import { Plus, Trash2, Printer, Building2, User, FileText, IndianRupee, Image as ImageIcon } from 'lucide-react';
+import { toPng } from 'html-to-image';
 import { motion, AnimatePresence } from 'motion/react';
 import { InvoiceData, InvoiceItem } from './types';
 import { calculateTotals } from './utils';
@@ -69,6 +70,7 @@ const initialData: InvoiceData = {
 
 export default function App() {
   const [data, setData] = useState<InvoiceData>(initialData);
+  const invoiceRef = useRef<HTMLDivElement>(null);
 
   const totals = useMemo(() => calculateTotals(data.items, data.tax), [data.items, data.tax]);
 
@@ -129,6 +131,25 @@ export default function App() {
 
   const removeItem = (id: string) => {
     setData(prev => ({ ...prev, items: prev.items.filter(item => item.id !== id) }));
+  };
+
+  const handleDownloadImage = async () => {
+    if (invoiceRef.current === null) return;
+    
+    try {
+      const dataUrl = await toPng(invoiceRef.current, {
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+        pixelRatio: 2, // Higher quality
+      });
+      const link = document.createElement('a');
+      link.download = `Invoice-${data.invoice.invoiceNumber || '1'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to download image:', err);
+      alert('Failed to generate image. Please try again.');
+    }
   };
 
   return (
@@ -254,19 +275,24 @@ export default function App() {
           </div>
         </section>
 
-        <div className="fixed bottom-0 left-0 w-full md:w-[450px] p-4 bg-white border-t border-slate-200 z-50 no-print flex gap-3">
-          <button onClick={() => window.print()} className="flex-1 bg-slate-900 text-white py-3 font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-black transition-all">
-            <Printer size={18} /> Print
-          </button>
-          <button onClick={() => window.print()} className="flex-1 bg-blue-600 text-white py-3 font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-700 transition-all">
-            <IndianRupee size={18} /> Download PDF
+        <div className="fixed bottom-0 left-0 w-full md:w-[450px] p-4 bg-white border-t border-slate-200 z-50 no-print flex flex-col gap-2">
+          <div className="flex gap-2">
+            <button onClick={() => window.print()} className="flex-1 bg-slate-900 text-white py-3 font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-black transition-all">
+              <Printer size={18} /> Print
+            </button>
+            <button onClick={() => window.print()} className="flex-1 bg-blue-600 text-white py-3 font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-700 transition-all">
+              <IndianRupee size={18} /> PDF
+            </button>
+          </div>
+          <button onClick={handleDownloadImage} className="w-full bg-emerald-600 text-white py-3 font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all">
+            <ImageIcon size={18} /> Download as Image (PNG)
           </button>
         </div>
       </div>
 
       {/* Preview Section */}
       <div className="flex-1 p-8 overflow-y-auto max-h-screen bg-slate-200">
-        <div className="mx-auto bg-white shadow-xl min-h-[1123px] w-[794px] p-6 text-[11px] font-serif leading-tight border border-slate-300 flex flex-col invoice-container overflow-hidden">
+        <div ref={invoiceRef} className="mx-auto bg-white shadow-xl min-h-[1123px] w-[794px] p-6 text-[11px] font-serif leading-tight border border-slate-300 flex flex-col invoice-container overflow-hidden">
           {/* Header */}
           <div className="text-center mb-4">
             <h1 className="text-lg font-black uppercase tracking-widest border-b-2 border-black inline-block px-4 pb-1">LABOUR BILL</h1>
