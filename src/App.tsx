@@ -387,31 +387,38 @@ export default function App() {
 
               {/* Items Content */}
               <div className="relative z-10 min-h-full">
-                {data.items.map((item, idx) => (
-                  <div key={item.id} className="flex min-h-[140px] items-stretch">
-                    <div className="w-8 text-center p-1">{idx + 1}</div>
-                    <div className="flex-1 p-2 flex flex-col justify-between">
-                       <div className="font-black uppercase leading-tight">{item.description}</div>
-                       <div className="flex flex-col items-end">
-                         {data.tax.igstPercent > 0 && <div className="font-black">IGST</div>}
-                         {data.tax.cgstPercent > 0 && <div className="font-black">CGST</div>}
-                         {data.tax.sgstPercent > 0 && <div className="font-black">SGST</div>}
-                       </div>
-                    </div>
-                    <div className="w-14 text-center p-1 break-all">{item.hsnSac}</div>
-                    <div className="w-12 text-center p-1">{item.quantity}</div>
-                    <div className="w-14 text-right p-1 font-mono">{item.rate.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-                    <div className="w-10 text-center p-1">{item.per}</div>
-                    <div className="w-20 text-right p-1 flex flex-col justify-between">
-                      <div className="font-black">{item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-                      <div className="flex flex-col items-end">
-                        {totals.igstAmount > 0 && <div>{totals.igstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
-                        {totals.cgstAmount > 0 && <div>{totals.cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
-                        {totals.sgstAmount > 0 && <div>{totals.sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                {data.items.map((item, idx) => {
+                  const itemTotal = (parseFloat(item.quantity || '0') || 1) * item.rate;
+                  const itemIgst = (itemTotal * data.tax.igstPercent) / 100;
+                  const itemCgst = (itemTotal * data.tax.cgstPercent) / 100;
+                  const itemSgst = (itemTotal * data.tax.sgstPercent) / 100;
+
+                  return (
+                    <div key={item.id} className="flex min-h-[140px] items-stretch">
+                      <div className="w-8 text-center p-1">{idx + 1}</div>
+                      <div className="flex-1 p-2 flex flex-col justify-between">
+                         <div className="font-black uppercase leading-tight">{item.description}</div>
+                         <div className="flex flex-col items-end text-[10px]">
+                            {data.tax.igstPercent > 0 && <div className="font-black">IGST {data.tax.igstPercent}%</div>}
+                            {data.tax.cgstPercent > 0 && <div className="font-black">CGST {data.tax.cgstPercent}%</div>}
+                            {data.tax.sgstPercent > 0 && <div className="font-black">SGST {data.tax.sgstPercent}%</div>}
+                         </div>
+                      </div>
+                      <div className="w-14 text-center p-1 break-all">{item.hsnSac}</div>
+                      <div className="w-12 text-center p-1">{item.quantity}</div>
+                      <div className="w-14 text-right p-1 font-mono">{item.rate.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                      <div className="w-10 text-center p-1">{item.per}</div>
+                      <div className="w-20 text-right p-1 flex flex-col justify-between">
+                        <div className="font-black">{item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                        <div className="flex flex-col items-end">
+                          {itemIgst > 0 && <div>{itemIgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                          {itemCgst > 0 && <div>{itemCgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                          {itemSgst > 0 && <div>{itemSgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
