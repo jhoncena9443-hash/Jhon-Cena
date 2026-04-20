@@ -17,7 +17,7 @@ const initialData: InvoiceData = {
     gstin: "33APTPM0177J2ZI",
     stateName: "Tamil Nadu",
     stateCode: "33",
-    email: "prmurali76@gmail.com"
+    email: "jhoncena9443@gmail.com"
   },
   consignee: {
     name: "ABHARAN JEWELLERS PRIVATE LIMITED",
@@ -214,6 +214,18 @@ export default function App() {
             </div>
           </div>
 
+          {/* Tax Configuration (Moved up for accessibility) */}
+          <div className="bg-slate-50 p-4 border border-slate-200 rounded">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+              <IndianRupee size={14} /> Tax Config (IGST/CGST/SGST)
+            </h2>
+            <div className="grid grid-cols-3 gap-3">
+              <div><label className="text-[8px] font-bold uppercase text-slate-400 flex mb-1">CGST %</label><input type="number" className="w-full px-2 py-1 border border-slate-200 text-sm font-mono focus:border-black outline-none" name="cgstPercent" value={data.tax.cgstPercent} onChange={handleTaxChange} /></div>
+              <div><label className="text-[8px] font-bold uppercase text-slate-400 flex mb-1">SGST %</label><input type="number" className="w-full px-2 py-1 border border-slate-200 text-sm font-mono focus:border-black outline-none" name="sgstPercent" value={data.tax.sgstPercent} onChange={handleTaxChange} /></div>
+              <div><label className="text-[8px] font-bold uppercase text-slate-400 flex mb-1">IGST %</label><input type="number" className="w-full px-2 py-1 border border-black text-sm font-mono focus:ring-1 focus:ring-black outline-none" name="igstPercent" value={data.tax.igstPercent} onChange={handleTaxChange} /></div>
+            </div>
+          </div>
+
           {/* Shipping/Dispatch */}
           <div>
             <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
@@ -259,18 +271,6 @@ export default function App() {
                 ))}
               </AnimatePresence>
               <button onClick={addItem} className="w-full py-2 border-2 border-dashed border-slate-300 rounded text-slate-400 font-bold text-xs hover:border-black hover:text-black transition-all">+ Add Service Item</button>
-            </div>
-          </div>
-
-          {/* Tax */}
-          <div>
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
-              <IndianRupee size={14} /> Tax Config (%)
-            </h2>
-            <div className="grid grid-cols-3 gap-3">
-              <div><label className="text-[8px] font-bold uppercase text-slate-400 flex mb-1">CGST</label><input type="number" className="w-full px-2 py-1 border border-slate-200 text-sm font-mono" name="cgstPercent" value={data.tax.cgstPercent} onChange={handleTaxChange} /></div>
-              <div><label className="text-[8px] font-bold uppercase text-slate-400 flex mb-1">SGST</label><input type="number" className="w-full px-2 py-1 border border-slate-200 text-sm font-mono" name="sgstPercent" value={data.tax.sgstPercent} onChange={handleTaxChange} /></div>
-              <div><label className="text-[8px] font-bold uppercase text-slate-400 flex mb-1">IGST</label><input type="number" className="w-full px-2 py-1 border border-slate-200 text-sm font-mono" name="igstPercent" value={data.tax.igstPercent} onChange={handleTaxChange} /></div>
             </div>
           </div>
         </section>
@@ -363,13 +363,13 @@ export default function App() {
           <div className="flex-grow flex flex-col border-x border-black relative">
             {/* Table Header */}
             <div className="flex border-b border-black text-center font-bold text-[10px]">
-              <div className="border-r border-black w-8 py-1">Sl No.</div>
-              <div className="border-r border-black flex-1 py-1">Particulars</div>
-              <div className="border-r border-black w-14 py-1">HSN/SAC</div>
-              <div className="border-r border-black w-12 py-1">Quantity</div>
-              <div className="border-r border-black w-14 py-1">Rate</div>
-              <div className="border-r border-black w-10 py-1">per</div>
-              <div className="w-20 py-1">Amount</div>
+              <div className="border-r border-black w-8 py-1 uppercase">Sl<br/>No.</div>
+              <div className="border-r border-black flex-1 py-1 uppercase">Particulars</div>
+              <div className="border-r border-black w-14 py-1 uppercase">HSN/SAC</div>
+              <div className="border-r border-black w-12 py-1 uppercase">Qty</div>
+              <div className="border-r border-black w-14 py-1 uppercase">Rate</div>
+              <div className="border-r border-black w-10 py-1 uppercase">per</div>
+              <div className="w-20 py-1 uppercase">Amount</div>
             </div>
 
             {/* Table Body & Vertical Lines Container */}
@@ -386,34 +386,35 @@ export default function App() {
               </div>
 
               {/* Items Content */}
-              <div className="relative z-10 min-h-full">
+              <div className="relative z-10 min-h-full font-serif">
                 {data.items.map((item, idx) => {
-                  const itemTotal = (parseFloat(item.quantity || '0') || 1) * item.rate;
+                  const qty = parseFloat(item.quantity) || 1;
+                  const itemTotal = qty * item.rate;
                   const itemIgst = (itemTotal * data.tax.igstPercent) / 100;
                   const itemCgst = (itemTotal * data.tax.cgstPercent) / 100;
                   const itemSgst = (itemTotal * data.tax.sgstPercent) / 100;
 
                   return (
-                    <div key={item.id} className="flex min-h-[140px] items-stretch">
+                    <div key={item.id} className="flex min-h-[140px] items-stretch border-b border-dotted border-slate-200">
                       <div className="w-8 text-center p-1">{idx + 1}</div>
                       <div className="flex-1 p-2 flex flex-col justify-between">
-                         <div className="font-black uppercase leading-tight">{item.description}</div>
-                         <div className="flex flex-col items-end text-[10px]">
-                            {data.tax.igstPercent > 0 && <div className="font-black">IGST {data.tax.igstPercent}%</div>}
-                            {data.tax.cgstPercent > 0 && <div className="font-black">CGST {data.tax.cgstPercent}%</div>}
-                            {data.tax.sgstPercent > 0 && <div className="font-black">SGST {data.tax.sgstPercent}%</div>}
+                         <div className="font-black uppercase leading-[1.1] text-xs">{item.description}</div>
+                         <div className="flex flex-col items-end pt-2">
+                            {data.tax.igstPercent > 0 && <div className="font-black">IGST</div>}
+                            {data.tax.cgstPercent > 0 && <div className="font-black">CGST</div>}
+                            {data.tax.sgstPercent > 0 && <div className="font-black">SGST</div>}
                          </div>
                       </div>
-                      <div className="w-14 text-center p-1 break-all">{item.hsnSac}</div>
-                      <div className="w-12 text-center p-1">{item.quantity}</div>
-                      <div className="w-14 text-right p-1 font-mono">{item.rate.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-                      <div className="w-10 text-center p-1">{item.per}</div>
-                      <div className="w-20 text-right p-1 flex flex-col justify-between">
-                        <div className="font-black">{item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                      <div className="w-14 text-center p-1 break-all flex items-start justify-center pt-2 font-bold">{item.hsnSac}</div>
+                      <div className="w-12 text-center p-1 flex items-start justify-center pt-2 font-bold">{item.quantity}</div>
+                      <div className="w-14 text-right p-1 font-mono flex items-start justify-end pt-2">{item.rate > 0 ? item.rate.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</div>
+                      <div className="w-10 text-center p-1 flex items-start justify-center pt-2 uppercase font-bold">{item.per}</div>
+                      <div className="w-20 text-right p-1 flex flex-col justify-between pt-2">
+                        <div className="font-bold">{itemTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
                         <div className="flex flex-col items-end">
-                          {itemIgst > 0 && <div>{itemIgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
-                          {itemCgst > 0 && <div>{itemCgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
-                          {itemSgst > 0 && <div>{itemSgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                          {itemIgst > 0 && <div className="font-bold">{itemIgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                          {itemCgst > 0 && <div className="font-bold">{itemCgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                          {itemSgst > 0 && <div className="font-bold">{itemSgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
                         </div>
                       </div>
                     </div>
@@ -425,69 +426,79 @@ export default function App() {
             {/* Total Row */}
             <div className="flex border-t border-black font-bold h-7 items-center bg-white relative z-20">
               <div className="border-r border-black w-8 h-full"></div>
-              <div className="border-r border-black flex-1 h-full text-right pr-2 self-center pt-1">Total</div>
+              <div className="border-r border-black flex-1 h-full text-right pr-2 self-center pt-1 font-black uppercase text-[10px]">Total</div>
               <div className="border-r border-black w-14 h-full"></div>
               <div className="border-r border-black w-12 h-full"></div>
               <div className="border-r border-black w-14 h-full"></div>
               <div className="border-r border-black w-10 h-full"></div>
-              <div className="w-20 text-right pr-1 flex items-center justify-end gap-1"><span className="text-[9px]">₹</span> {totals.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+              <div className="w-20 text-right pr-1 flex items-center justify-end gap-1 font-black text-sm"><span className="text-[10px] font-bold">₹</span> {totals.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
             </div>
           </div>
 
-          {/* Summary Box */}
-          <div className="border border-black p-2 flex flex-col min-h-[60px]">
+          {/* Amount Chargeable Box */}
+          <div className="border border-t-0 border-black p-2 min-h-[60px] relative">
              <div className="flex justify-between items-start">
-               <div>
-                <span className="italic">Amount Chargeable (in words)</span>
-                <p className="font-black mt-1 uppercase text-xs">{totals.totalInWords}</p>
+               <div className="flex-1">
+                 <span className="italic text-[10px] font-bold">Amount Chargeable (in words)</span>
+                 <p className="font-black mt-1 uppercase text-sm leading-tight">{totals.totalInWords}</p>
                </div>
-               <span className="italic font-bold">E. & O.E</span>
+               <span className="italic font-bold text-[10px] absolute top-2 right-2">E. & O.E</span>
              </div>
           </div>
 
-          {/* Tax Table */}
-          <div className="mt-2">
-            <table className="w-full border border-black border-collapse text-center">
+          {/* Tax Breakdown Section */}
+          <div className="mt-1 border border-black overflow-hidden bg-white">
+            <table className="w-full border-collapse text-[10px] text-center font-bold">
               <thead>
                 <tr className="border-b border-black">
-                  <th className="border-r border-black" rowSpan={2}>HSN/SAC</th>
-                  <th className="border-r border-black" rowSpan={2}>Taxable Value</th>
-                  {data.tax.igstPercent > 0 && <th className="border-r border-black" colSpan={2}>IGST</th>}
+                  <th className="border-r border-black w-24 py-1" rowSpan={2}>HSN/SAC</th>
+                  <th className="border-r border-black w-24 py-1" rowSpan={2}>Taxable Value</th>
+                  {data.tax.igstPercent > 0 && <th className="border-r border-black py-0.5" colSpan={2}>Integrated Tax</th>}
                   {(data.tax.cgstPercent > 0 || data.tax.sgstPercent > 0) && (
-                    <><th className="border-r border-black" colSpan={2}>CGST</th><th className="border-r border-black" colSpan={2}>SGST</th></>
+                    <><th className="border-r border-black py-0.5" colSpan={2}>Central Tax</th><th className="border-r border-black py-0.5" colSpan={2}>State Tax</th></>
                   )}
-                  <th rowSpan={2}>Total Tax Amount</th>
+                  <th className="py-1" rowSpan={2}>Total Tax Amount</th>
                 </tr>
                 <tr className="border-b border-black">
-                   {(data.tax.cgstPercent > 0 || data.tax.sgstPercent > 0) ? (
-                    <><th className="border-r border-black px-1">Rate</th><th className="border-r border-black">Amount</th><th className="border-r border-black px-1">Rate</th><th className="border-r border-black">Amount</th></>
-                   ) : null}
-                   {data.tax.igstPercent > 0 && <><th className="border-r border-black px-1">Rate</th><th className="border-r border-black">Amount</th></>}
+                   {data.tax.igstPercent > 0 && <><th className="border-r border-black w-14 py-0.5">Rate</th><th className="border-r border-black w-24 py-0.5">Amount</th></>}
+                   {data.tax.cgstPercent > 0 && <><th className="border-r border-black w-14 py-0.5">Rate</th><th className="border-r border-black w-24 py-0.5">Amount</th></>}
+                   {data.tax.sgstPercent > 0 && <><th className="border-r border-black w-14 py-0.5">Rate</th><th className="border-r border-black w-24 py-0.5">Amount</th></>}
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-black">
-                  <td className="border-r border-black">{data.items[0]?.hsnSac || '---'}</td>
-                  <td className="border-r border-black px-1">{totals.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                  {data.tax.igstPercent > 0 && <><td className="px-1 border-r border-black">{data.tax.igstPercent}%</td><td className="px-1 border-r border-black">{totals.igstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  {data.tax.cgstPercent > 0 && <><td className="px-1 border-r border-black">{data.tax.cgstPercent}%</td><td className="px-1 border-r border-black">{totals.cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  {data.tax.sgstPercent > 0 && <><td className="px-1 border-r border-black">{data.tax.sgstPercent}%</td><td className="px-1 border-r border-black">{totals.sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  <td className="px-1">{totals.totalTax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                </tr>
-                <tr className="font-bold">
-                  <td className="border-r border-black text-right pr-2">Total</td>
-                  <td className="border-r border-black px-1">{totals.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                  {data.tax.igstPercent > 0 && <><td className="border-r border-black"></td><td className="px-1 border-r border-black">{totals.igstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  {data.tax.cgstPercent > 0 && <><td className="border-r border-black"></td><td className="px-1 border-r border-black">{totals.cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  {data.tax.sgstPercent > 0 && <><td className="border-r border-black"></td><td className="px-1 border-r border-black">{totals.sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  <td className="px-1">{totals.totalTax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                {data.items.slice(0, 1).map((item) => (
+                  <tr key={item.id} className="border-b border-black/10">
+                    <td className="border-r border-black py-1 h-6">{item.hsnSac || '---'}</td>
+                    <td className="border-r border-black text-right pr-2">{totals.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    {data.tax.igstPercent > 0 && <>
+                      <td className="border-r border-black">{data.tax.igstPercent}%</td>
+                      <td className="border-r border-black text-right pr-2">{totals.igstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    </>}
+                    {data.tax.cgstPercent > 0 && <>
+                      <td className="border-r border-black">{data.tax.cgstPercent}%</td>
+                      <td className="border-r border-black text-right pr-2">{totals.cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    </>}
+                    {data.tax.sgstPercent > 0 && <>
+                      <td className="border-r border-black">{data.tax.sgstPercent}%</td>
+                      <td className="border-r border-black text-right pr-2">{totals.sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    </>}
+                    <td className="text-right pr-2">{totals.totalTax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                ))}
+                <tr className="font-black border-t border-black bg-slate-50">
+                  <td className="border-r border-black text-right pr-2 py-0.5">Total</td>
+                  <td className="border-r border-black text-right pr-2">{totals.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                  {data.tax.igstPercent > 0 && <><td className="border-r border-black"></td><td className="border-r border-black text-right pr-2">{totals.igstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
+                  {data.tax.cgstPercent > 0 && <><td className="border-r border-black"></td><td className="border-r border-black text-right pr-2">{totals.cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
+                  {data.tax.sgstPercent > 0 && <><td className="border-r border-black"></td><td className="border-r border-black text-right pr-2">{totals.sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
+                  <td className="text-right pr-2">{totals.totalTax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <div className="mt-2 text-xs">
-            Tax Amount (in words) : <span className="font-black uppercase">{totals.taxInWords}</span>
+          <div className="mt-1 p-1 border-x border-b border-black">
+            <p className="text-[11px] leading-tight font-black uppercase">Tax Amount (in words) : {totals.taxInWords}</p>
           </div>
 
           {/* Footer Footer */}

@@ -33,7 +33,7 @@ export const numberToWords = (num: number): string => {
   const wholePart = Math.floor(num);
   const decimalPart = Math.round((num - wholePart) * 100);
 
-  let result = formatLakhs(wholePart) + ' Rupees';
+  let result = 'INR ' + formatLakhs(wholePart);
   if (decimalPart > 0) {
     result += ' and ' + convert(decimalPart) + ' Paise';
   }
@@ -41,7 +41,10 @@ export const numberToWords = (num: number): string => {
 };
 
 export const calculateTotals = (items: any[], tax: any) => {
-  const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.quantity || '0') * item.rate), 0);
+  const subtotal = items.reduce((sum, item) => {
+    const qty = parseFloat(item.quantity) || 1;
+    return sum + (qty * item.rate);
+  }, 0);
   const cgstAmount = (subtotal * tax.cgstPercent) / 100;
   const sgstAmount = (subtotal * tax.sgstPercent) / 100;
   const igstAmount = (subtotal * tax.igstPercent) / 100;
