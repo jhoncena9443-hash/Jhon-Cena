@@ -42,7 +42,14 @@ export const numberToWords = (num: number): string => {
 
 export const calculateTotals = (items: any[], tax: any) => {
   const subtotal = items.reduce((sum, item) => {
-    const qty = parseFloat(item.quantity) || 1;
+    const kgsVal = parseFloat(item.kgs || '');
+    const gmsVal = parseFloat(item.grams || '');
+    let qty = 1;
+    if (!isNaN(kgsVal) || !isNaN(gmsVal)) {
+      qty = (isNaN(kgsVal) ? 0 : kgsVal) + (isNaN(gmsVal) ? 0 : gmsVal) / 1000;
+    } else if (item.quantity) {
+      qty = parseFloat(item.quantity) || 1;
+    }
     return sum + (qty * item.rate);
   }, 0);
   const cgstAmount = (subtotal * tax.cgstPercent) / 100;

@@ -17,21 +17,24 @@ const initialData: InvoiceData = {
     gstin: "33APTPM0177J2ZI",
     stateName: "Tamil Nadu",
     stateCode: "33",
-    email: "jhoncena9443@gmail.com"
+    email: "jhoncena9443@gmail.com",
+    phone: "9443567890"
   },
   consignee: {
     name: "ABHARAN JEWELLERS PRIVATE LIMITED",
     address: "10-3-4, CORPORATION BANK ROAD,\nUDUPI,\nKARNATAKA",
     gstin: "29AAJCA8026E1ZN",
     stateName: "Karnataka",
-    stateCode: "29"
+    stateCode: "29",
+    phone: "9876543210"
   },
   buyer: {
     name: "ABHARAN JEWELLERS PRIVATE LIMITED",
     address: "10-3-4, CORPORATION BANK ROAD,\nUDUPI,\nKARNATAKA",
     gstin: "29AAJCA8026E1ZN",
     stateName: "Karnataka",
-    stateCode: "29"
+    stateCode: "29",
+    phone: "9876543210"
   },
   invoice: {
     invoiceNumber: "1",
@@ -56,8 +59,10 @@ const initialData: InvoiceData = {
       description: "Labour Services Charge",
       hsnSac: "998892",
       quantity: "",
+      kgs: "",
+      grams: "",
       rate: 10000,
-      per: "",
+      percentage: "",
       amount: 10000
     }
   ],
@@ -105,8 +110,15 @@ export default function App() {
       items: prev.items.map(item => {
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
-          if (field === 'quantity' || field === 'rate') {
-            const q = parseFloat(updatedItem.quantity || '1');
+          if (field === 'quantity' || field === 'kgs' || field === 'grams' || field === 'rate') {
+            const kgsVal = parseFloat(updatedItem.kgs || '');
+            const gmsVal = parseFloat(updatedItem.grams || '');
+            let q = 1;
+            if (!isNaN(kgsVal) || !isNaN(gmsVal)) {
+              q = (isNaN(kgsVal) ? 0 : kgsVal) + (isNaN(gmsVal) ? 0 : gmsVal) / 1000;
+            } else if (updatedItem.quantity) {
+              q = parseFloat(updatedItem.quantity) || 1;
+            }
             updatedItem.amount = q * updatedItem.rate;
           }
           return updatedItem;
@@ -122,8 +134,10 @@ export default function App() {
       description: "",
       hsnSac: "",
       quantity: "",
+      kgs: "",
+      grams: "",
       rate: 0,
-      per: "",
+      percentage: "",
       amount: 0
     };
     setData(prev => ({ ...prev, items: [...prev.items, newItem] }));
@@ -172,8 +186,9 @@ export default function App() {
               <textarea className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none min-h-[60px]" placeholder="Seller Address" name="address" value={data.seller.address} onChange={handleSellerChange} />
               <div className="grid grid-cols-2 gap-3">
                 <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-mono" placeholder="GSTIN" name="gstin" value={data.seller.gstin} onChange={handleSellerChange} />
-                <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none" placeholder="Email" name="email" value={data.seller.email} onChange={handleSellerChange} />
+                <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-mono" placeholder="Phone No." name="phone" value={data.seller.phone || ''} onChange={handleSellerChange} />
               </div>
+              <input className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none" placeholder="Email" name="email" value={data.seller.email} onChange={handleSellerChange} />
               <div className="grid grid-cols-2 gap-3">
                 <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none" placeholder="State Name" name="stateName" value={data.seller.stateName} onChange={handleSellerChange} />
                 <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none" placeholder="State Code" name="stateCode" value={data.seller.stateCode} onChange={handleSellerChange} />
@@ -190,7 +205,10 @@ export default function App() {
               <div className="space-y-3">
                 <input className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-bold" placeholder="Name" name="name" value={data[party].name} onChange={(e) => handlePartyChange(party, e)} />
                 <textarea className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none min-h-[60px]" placeholder="Address" name="address" value={data[party].address} onChange={(e) => handlePartyChange(party, e)} />
-                <input className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-mono" placeholder="GSTIN" name="gstin" value={data[party].gstin} onChange={(e) => handlePartyChange(party, e)} />
+                <div className="grid grid-cols-2 gap-3">
+                  <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-mono" placeholder="GSTIN" name="gstin" value={data[party].gstin} onChange={(e) => handlePartyChange(party, e)} />
+                  <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-mono" placeholder="Phone No." name="phone" value={data[party].phone || ''} onChange={(e) => handlePartyChange(party, e)} />
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none" placeholder="State" name="stateName" value={data[party].stateName} onChange={(e) => handlePartyChange(party, e)} />
                   <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none" placeholder="Code" name="stateCode" value={data[party].stateCode} onChange={(e) => handlePartyChange(party, e)} />
@@ -260,11 +278,12 @@ export default function App() {
                       <input className="w-full bg-transparent border-b border-slate-300 text-sm focus:border-black outline-none font-bold" placeholder="Item Description" value={item.description} onChange={(e) => updateItem(item.id, 'description', e.target.value)} />
                       <div className="grid grid-cols-2 gap-2">
                         <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none" placeholder="HSN/SAC" value={item.hsnSac} onChange={(e) => updateItem(item.id, 'hsnSac', e.target.value)} />
-                        <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none" placeholder="Per (kg/hrs...)" value={item.per} onChange={(e) => updateItem(item.id, 'per', e.target.value)} />
+                        <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none" placeholder="Percentage (%)" value={item.percentage} onChange={(e) => updateItem(item.id, 'percentage', e.target.value)} />
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(item.id, 'quantity', e.target.value)} />
-                        <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none font-mono" placeholder="Rate" value={item.rate} onChange={(e) => updateItem(item.id, 'rate', parseFloat(e.target.value) || 0)} />
+                      <div className="grid grid-cols-3 gap-2">
+                        <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none" placeholder="Kgs" value={item.kgs ?? ''} onChange={(e) => updateItem(item.id, 'kgs', e.target.value)} />
+                        <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none" placeholder="Grams" value={item.grams ?? ''} onChange={(e) => updateItem(item.id, 'grams', e.target.value)} />
+                        <input className="bg-transparent border-b border-slate-300 text-xs focus:border-black outline-none font-mono" placeholder="Rate" value={item.rate || ''} onChange={(e) => updateItem(item.id, 'rate', parseFloat(e.target.value) || 0)} />
                       </div>
                     </div>
                   </motion.div>
@@ -299,10 +318,13 @@ export default function App() {
           </div>
 
           {/* Top Section Grid */}
-          <div className="grid grid-cols-2 border border-black h-[140px]">
+          <div className="grid grid-cols-2 border border-black min-h-[140px]">
             <div className="p-2 border-r border-black overflow-hidden">
               <h4 className="font-black mb-1">{data.seller.name}</h4>
               <p className="whitespace-pre-wrap">{data.seller.address}</p>
+              {data.seller.phone && (
+                <p className="mt-1 text-[10px]">Phone No: <span className="font-bold">{data.seller.phone}</span></p>
+              )}
               <div className="mt-2 space-y-0.5">
                 <p>GSTIN/UIN: <span className="font-bold">{data.seller.gstin}</span></p>
                 <p>State Name: {data.seller.stateName}, Code: {data.seller.stateCode}</p>
@@ -327,6 +349,9 @@ export default function App() {
               <span className="text-[9px] font-bold">Consignee (Ship to)</span>
               <h4 className="font-black mt-1 leading-tight">{data.consignee.name}</h4>
               <p className="whitespace-pre-wrap mt-1 leading-normal">{data.consignee.address}</p>
+              {data.consignee.phone && (
+                <p className="mt-1 text-[10px]">Phone No: <span className="font-bold">{data.consignee.phone}</span></p>
+              )}
               <div className="mt-auto pt-2 space-y-0.5">
                 <p>GSTIN/UIN: <span className="font-bold">{data.consignee.gstin}</span></p>
                 <p>State Name: {data.consignee.stateName}, Code: {data.consignee.stateCode}</p>
@@ -348,6 +373,9 @@ export default function App() {
                <span className="text-[9px] font-bold">Buyer (Bill to)</span>
                <h4 className="font-black mt-1 leading-tight">{data.buyer.name}</h4>
                <p className="whitespace-pre-wrap mt-1 leading-normal">{data.buyer.address}</p>
+               {data.buyer.phone && (
+                 <p className="mt-1 text-[10px]">Phone No: <span className="font-bold">{data.buyer.phone}</span></p>
+               )}
                <div className="mt-auto pt-2 space-y-0.5">
                 <p>GSTIN/UIN: <span className="font-bold">{data.buyer.gstin}</span></p>
                 <p>State Name: {data.buyer.stateName}, Code: {data.buyer.stateCode}</p>
@@ -362,14 +390,32 @@ export default function App() {
           {/* Table */}
           <div className="flex-grow flex flex-col border-x border-black relative">
             {/* Table Header */}
-            <div className="flex border-b border-black text-center font-bold text-[10px]">
-              <div className="border-r border-black w-8 py-1 uppercase">Sl<br/>No.</div>
-              <div className="border-r border-black flex-1 py-1 uppercase">Particulars</div>
-              <div className="border-r border-black w-14 py-1 uppercase">HSN/SAC</div>
-              <div className="border-r border-black w-12 py-1 uppercase">Qty</div>
-              <div className="border-r border-black w-14 py-1 uppercase">Rate</div>
-              <div className="border-r border-black w-10 py-1 uppercase">per</div>
-              <div className="w-20 py-1 uppercase">Amount</div>
+            <div className="flex border-b border-black text-center font-bold text-[10px] items-stretch">
+              <div className="border-r border-black w-8 py-1 flex items-center justify-center uppercase whitespace-nowrap">Sl<br/>No.</div>
+              <div className="border-r border-black w-16 py-1 flex items-center justify-center uppercase">HSN/SAC</div>
+              <div className="border-r border-black flex-1 py-1 flex items-center justify-center uppercase">Particulars</div>
+              <div className="border-r border-black w-16 py-1 flex items-center justify-center uppercase">TAX</div>
+              
+              {/* WEIGHT with KGS and GRAMS subheaders */}
+              <div className="border-r border-black w-28 flex flex-col">
+                <div className="border-b border-black py-0.5 uppercase text-[9px] tracking-wider font-bold">Weight</div>
+                <div className="flex text-[9px] h-full items-stretch">
+                  <div className="border-r border-black w-14 py-0.5 flex items-center justify-center font-bold">KGS</div>
+                  <div className="w-14 py-0.5 flex items-center justify-center font-bold">GRAMS</div>
+                </div>
+              </div>
+
+              <div className="border-r border-black w-20 py-1 flex items-center justify-center uppercase">Rate</div>
+              <div className="border-r border-black w-16 py-1 flex items-center justify-center text-[7px] tracking-tighter leading-none uppercase font-bold text-center">percentage</div>
+              
+              {/* AMOUNT with Rs and Ps subheaders */}
+              <div className="w-24 flex flex-col">
+                <div className="border-b border-black py-0.5 uppercase text-[9px] tracking-wider font-bold">Amount</div>
+                <div className="flex text-[9px] h-full items-stretch">
+                  <div className="border-r border-black w-18 py-0.5 flex items-center justify-center font-bold">Rs.</div>
+                  <div className="w-6 py-0.5 flex items-center justify-center font-bold">Ps.</div>
+                </div>
+              </div>
             </div>
 
             {/* Table Body & Vertical Lines Container */}
@@ -377,61 +423,127 @@ export default function App() {
               {/* Background vertical lines */}
               <div className="absolute inset-0 pointer-events-none flex">
                 <div className="border-r border-black w-8 h-full"></div>
+                <div className="border-r border-black w-16 h-full"></div>
                 <div className="border-r border-black flex-1 h-full"></div>
+                <div className="border-r border-black w-16 h-full"></div>
                 <div className="border-r border-black w-14 h-full"></div>
-                <div className="border-r border-black w-12 h-full"></div>
                 <div className="border-r border-black w-14 h-full"></div>
-                <div className="border-r border-black w-10 h-full"></div>
-                <div className="w-20 h-full"></div>
+                <div className="border-r border-black w-20 h-full"></div>
+                <div className="border-r border-black w-16 h-full"></div>
+                <div className="border-r border-black w-18 h-full"></div>
+                <div className="w-6 h-full"></div>
               </div>
 
               {/* Items Content */}
-              <div className="relative z-10 min-h-full font-serif">
-                {data.items.map((item, idx) => {
-                  const qty = parseFloat(item.quantity) || 1;
-                  const itemTotal = qty * item.rate;
-                  const itemIgst = (itemTotal * data.tax.igstPercent) / 100;
-                  const itemCgst = (itemTotal * data.tax.cgstPercent) / 100;
-                  const itemSgst = (itemTotal * data.tax.sgstPercent) / 100;
+              <div className="relative z-10 min-h-full font-serif flex flex-col justify-between">
+                <div className="flex-grow">
+                  {data.items.map((item, idx) => {
+                    const kgsVal = parseFloat(item.kgs || '');
+                    const gmsVal = parseFloat(item.grams || '');
+                    let qty = 1;
+                    if (!isNaN(kgsVal) || !isNaN(gmsVal)) {
+                      qty = (isNaN(kgsVal) ? 0 : kgsVal) + (isNaN(gmsVal) ? 0 : gmsVal) / 1000;
+                    } else if (item.quantity) {
+                      qty = parseFloat(item.quantity) || 1;
+                    }
+                    const itemTotal = qty * item.rate;
 
-                  return (
-                    <div key={item.id} className="flex min-h-[140px] items-stretch border-b border-dotted border-slate-200">
-                      <div className="w-8 text-center p-1">{idx + 1}</div>
-                      <div className="flex-1 p-2 flex flex-col justify-between">
-                         <div className="font-black uppercase leading-[1.1] text-xs">{item.description}</div>
-                         <div className="flex flex-col items-end pt-2">
-                            {data.tax.igstPercent > 0 && <div className="font-black">IGST</div>}
-                            {data.tax.cgstPercent > 0 && <div className="font-black">CGST</div>}
-                            {data.tax.sgstPercent > 0 && <div className="font-black">SGST</div>}
-                         </div>
-                      </div>
-                      <div className="w-14 text-center p-1 break-all flex items-start justify-center pt-2 font-bold">{item.hsnSac}</div>
-                      <div className="w-12 text-center p-1 flex items-start justify-center pt-2 font-bold">{item.quantity}</div>
-                      <div className="w-14 text-right p-1 font-mono flex items-start justify-end pt-2">{item.rate > 0 ? item.rate.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</div>
-                      <div className="w-10 text-center p-1 flex items-start justify-center pt-2 uppercase font-bold">{item.per}</div>
-                      <div className="w-20 text-right p-1 flex flex-col justify-between pt-2">
-                        <div className="font-bold">{itemTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-                        <div className="flex flex-col items-end">
-                          {itemIgst > 0 && <div className="font-bold">{itemIgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
-                          {itemCgst > 0 && <div className="font-bold">{itemCgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
-                          {itemSgst > 0 && <div className="font-bold">{itemSgst.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>}
+                    return (
+                      <div key={item.id} className="flex min-h-[140px] items-stretch border-b border-dotted border-slate-200">
+                        <div className="w-8 text-center p-1 font-bold">{idx + 1}</div>
+                        <div className="w-16 text-center p-1 break-all flex items-start justify-center pt-2 font-bold">{item.hsnSac}</div>
+                        <div className="flex-1 p-2 flex flex-col justify-between">
+                           <div className="font-black uppercase leading-[1.1] text-xs font-bold">{item.description}</div>
+                        </div>
+                        <div className="w-16 text-center p-1 flex flex-col items-center justify-start pt-2 gap-1 font-bold text-[10px] break-all leading-none uppercase">
+                           {/* Empty in typical rows, options shown below in the fixed box */}
+                        </div>
+                        <div className="w-14 text-center p-1 flex items-start justify-center pt-2 font-bold">{item.kgs ?? ''}</div>
+                        <div className="w-14 text-center p-1 flex items-start justify-center pt-2 font-bold">{item.grams ?? ''}</div>
+                        <div className="w-20 text-right p-1 font-mono flex items-start justify-end pt-2 font-bold">{item.rate > 0 ? item.rate.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</div>
+                        <div className="w-16 text-center p-1 flex items-start justify-center pt-2 uppercase font-bold font-mono text-[9px]">{item.percentage}</div>
+                        <div className="w-24 flex items-stretch">
+                          {(() => {
+                            const integerPart = Math.floor(itemTotal);
+                            const decimalPart = Math.round((itemTotal - integerPart) * 100);
+                            return (
+                              <>
+                                <div className="w-18 text-right pr-2 p-1 font-mono font-bold flex items-start justify-end pt-2">
+                                  {itemTotal > 0 ? integerPart.toLocaleString('en-IN') : ''}
+                                </div>
+                                <div className="w-6 text-center p-1 font-mono font-bold flex items-start justify-center pt-2 font-black">
+                                  {itemTotal > 0 ? decimalPart.toString().padStart(2, '0') : ''}
+                                </div>
+                              </>
+                            );
+                          })()}
                         </div>
                       </div>
+                    );
+                  })}
+                </div>
+
+                {/* Fixed Box for IGST, SGST, CGST options at the bottom of the tax column */}
+                <div className="border-t border-black bg-slate-50/20">
+                  <div className="flex items-stretch text-[10px] h-[54px]">
+                    <div className="w-8 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black"></div>
+                    <div className="flex-1 h-full border-r border-black"></div>
+                    
+                    {/* Fixed box for CGST, SGST, IGST stacked */}
+                    <div className="w-16 h-full border-r border-black flex flex-col items-center justify-center font-bold text-[9px] select-none leading-tight uppercase bg-white">
+                      <div className="flex-grow w-full flex items-center justify-center">CGST</div>
+                      <div className="w-full border-t border-black"></div>
+                      <div className="flex-grow w-full flex items-center justify-center">SGST</div>
+                      <div className="w-full border-t border-black"></div>
+                      <div className="flex-grow w-full flex items-center justify-center">IGST</div>
                     </div>
-                  );
-                })}
+                    
+                    <div className="w-14 h-full border-r border-black"></div>
+                    <div className="w-14 h-full border-r border-black"></div>
+                    <div className="w-20 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black"></div>
+                    <div className="w-18 h-full border-r border-black"></div>
+                    <div className="w-6 h-full"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Total Row */}
             <div className="flex border-t border-black font-bold h-7 items-center bg-white relative z-20">
               <div className="border-r border-black w-8 h-full"></div>
+              <div className="border-r border-black w-16 h-full"></div>
               <div className="border-r border-black flex-1 h-full text-right pr-2 self-center pt-1 font-black uppercase text-[10px]">Total</div>
-              <div className="border-r border-black w-14 h-full"></div>
-              <div className="border-r border-black w-12 h-full"></div>
-              <div className="border-r border-black w-14 h-full"></div>
-              <div className="border-r border-black w-10 h-full"></div>
-              <div className="w-20 text-right pr-1 flex items-center justify-end gap-1 font-black text-sm"><span className="text-[10px] font-bold">₹</span> {totals.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+              <div className="border-r border-black w-16 h-full"></div>
+              <div className="border-r border-black w-14 h-full text-center flex items-center justify-center text-[10px] font-mono font-bold">
+                {(() => {
+                  const totalKgs = data.items.reduce((sum, item) => sum + (parseFloat(item.kgs || '') || 0), 0);
+                  return totalKgs > 0 ? totalKgs : '';
+                })()}
+              </div>
+              <div className="border-r border-black w-14 h-full text-center flex items-center justify-center text-[10px] font-mono font-bold">
+                {(() => {
+                  const totalGrams = data.items.reduce((sum, item) => sum + (parseFloat(item.grams || '') || 0), 0);
+                  return totalGrams > 0 ? totalGrams : '';
+                })()}
+              </div>
+              <div className="border-r border-black w-20 h-full"></div>
+              <div className="border-r border-black w-16 h-full"></div>
+              {(() => {
+                const totalInt = Math.floor(totals.total);
+                const totalDec = Math.round((totals.total - totalInt) * 100);
+                return (
+                  <>
+                    <div className="border-r border-black w-18 h-full text-right pr-2 flex items-center justify-end text-[10px] font-mono font-bold">
+                      {totalInt.toLocaleString('en-IN')}
+                    </div>
+                    <div className="w-6 h-full text-center flex items-center justify-center text-[10px] font-mono font-bold">
+                      {totalDec.toString().padStart(2, '0')}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
 

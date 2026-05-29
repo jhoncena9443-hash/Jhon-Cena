@@ -4,6 +4,7 @@ export interface PartyDetails {
   gstin: string;
   stateName: string;
   stateCode: string;
+  phone?: string;
 }
 
 export interface SellerDetails extends PartyDetails {
@@ -34,8 +35,10 @@ export interface InvoiceItem {
   description: string;
   hsnSac: string;
   quantity: string;
+  kgs?: string;
+  grams?: string;
   rate: number;
-  per: string;
+  percentage: string;
   amount: number;
 }
 
