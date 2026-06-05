@@ -13,12 +13,12 @@ import { calculateTotals } from './utils';
 const initialData: InvoiceData = {
   seller: {
     name: "M.S.V.JEWELLERS",
-    address: "No.9/66A, VENKATASAMY STREET,\nSALEM",
-    gstin: "33APTPM0177J2ZI",
+    address: "No.9/66, VENKATASAMY STREET,\nSALEM",
+    gstin: "33APTPM0177J1ZI",
     stateName: "Tamil Nadu",
     stateCode: "33",
-    email: "jhoncena9443@gmail.com",
-    phone: "9443567890"
+    email: "msvjewellers76@gmail.com",
+    phone: "9443027918/96555 62622"
   },
   consignee: {
     name: "ABHARAN JEWELLERS PRIVATE LIMITED",
@@ -81,12 +81,14 @@ export default function App() {
 
   const handleSellerChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setData(prev => ({ ...prev, seller: { ...prev.seller, [name]: value } }));
+    const finalValue = name === 'name' ? value.toUpperCase() : value;
+    setData(prev => ({ ...prev, seller: { ...prev.seller, [name]: finalValue } }));
   };
 
   const handlePartyChange = (party: 'consignee' | 'buyer', e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setData(prev => ({ ...prev, [party]: { ...prev[party], [name]: value } }));
+    const finalValue = name === 'name' ? value.toUpperCase() : value;
+    setData(prev => ({ ...prev, [party]: { ...prev[party], [name]: finalValue } }));
   };
 
   const handleInvoiceChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -182,7 +184,7 @@ export default function App() {
               <Building2 size={14} /> Seller Information
             </h2>
             <div className="space-y-3">
-              <input className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-bold" placeholder="Seller Name" name="name" value={data.seller.name} onChange={handleSellerChange} />
+              <input className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-bold uppercase" placeholder="Seller Name" name="name" value={data.seller.name} onChange={handleSellerChange} />
               <textarea className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none min-h-[60px]" placeholder="Seller Address" name="address" value={data.seller.address} onChange={handleSellerChange} />
               <div className="grid grid-cols-2 gap-3">
                 <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-mono" placeholder="GSTIN" name="gstin" value={data.seller.gstin} onChange={handleSellerChange} />
@@ -203,7 +205,7 @@ export default function App() {
                 <User size={14} /> {party.charAt(0).toUpperCase() + party.slice(1)}
               </h2>
               <div className="space-y-3">
-                <input className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-bold" placeholder="Name" name="name" value={data[party].name} onChange={(e) => handlePartyChange(party, e)} />
+                <input className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-bold uppercase" placeholder="Name" name="name" value={data[party].name} onChange={(e) => handlePartyChange(party, e)} />
                 <textarea className="w-full px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none min-h-[60px]" placeholder="Address" name="address" value={data[party].address} onChange={(e) => handlePartyChange(party, e)} />
                 <div className="grid grid-cols-2 gap-3">
                   <input className="px-3 py-2 border border-slate-200 text-sm focus:border-black outline-none font-mono" placeholder="GSTIN" name="gstin" value={data[party].gstin} onChange={(e) => handlePartyChange(party, e)} />
@@ -320,15 +322,15 @@ export default function App() {
           {/* Top Section Grid */}
           <div className="grid grid-cols-2 border border-black min-h-[140px]">
             <div className="p-2 border-r border-black overflow-hidden">
-              <h4 className="font-black mb-1">{data.seller.name}</h4>
-              <p className="whitespace-pre-wrap">{data.seller.address}</p>
+              <h4 className="font-sans font-black text-[13px] uppercase tracking-wide text-black mb-1">{data.seller.name}</h4>
+              <p className="whitespace-pre-wrap font-bold text-[10px]">{data.seller.address}</p>
               {data.seller.phone && (
-                <p className="mt-1 text-[10px]">Phone No: <span className="font-bold">{data.seller.phone}</span></p>
+                <p className="mt-1 text-[10px] font-bold">Phone No: <span className="font-black text-black">{data.seller.phone}</span></p>
               )}
-              <div className="mt-2 space-y-0.5">
-                <p>GSTIN/UIN: <span className="font-bold">{data.seller.gstin}</span></p>
-                <p>State Name: {data.seller.stateName}, Code: {data.seller.stateCode}</p>
-                <p>E-Mail: {data.seller.email}</p>
+              <div className="mt-2 space-y-0.5 text-[10px] font-bold">
+                <p>GSTIN/UIN: <span className="font-black text-black">{data.seller.gstin}</span></p>
+                <p>State Name: <span className="font-black text-black">{data.seller.stateName}</span>, Code: <span className="font-black text-black">{data.seller.stateCode}</span></p>
+                <p>E-Mail: <span className="font-black text-black">{data.seller.email}</span></p>
               </div>
             </div>
             <div className="grid grid-cols-2 grid-rows-4 h-full">
@@ -352,9 +354,9 @@ export default function App() {
               {data.consignee.phone && (
                 <p className="mt-1 text-[10px]">Phone No: <span className="font-bold">{data.consignee.phone}</span></p>
               )}
-              <div className="mt-auto pt-2 space-y-0.5">
-                <p>GSTIN/UIN: <span className="font-bold">{data.consignee.gstin}</span></p>
-                <p>State Name: {data.consignee.stateName}, Code: {data.consignee.stateCode}</p>
+              <div className="mt-auto pt-2 space-y-0.5 text-[10px] font-bold">
+                <p>GSTIN/UIN: <span className="font-black text-black">{data.consignee.gstin}</span></p>
+                <p>State Name: <span className="font-bold text-black">{data.consignee.stateName}</span>, Code: <span className="font-bold text-black">{data.consignee.stateCode}</span></p>
               </div>
             </div>
             <div className="grid grid-cols-2 grid-rows-3 h-full">
@@ -376,9 +378,9 @@ export default function App() {
                {data.buyer.phone && (
                  <p className="mt-1 text-[10px]">Phone No: <span className="font-bold">{data.buyer.phone}</span></p>
                )}
-               <div className="mt-auto pt-2 space-y-0.5">
-                <p>GSTIN/UIN: <span className="font-bold">{data.buyer.gstin}</span></p>
-                <p>State Name: {data.buyer.stateName}, Code: {data.buyer.stateCode}</p>
+              <div className="mt-auto pt-2 space-y-0.5 text-[10px] font-bold">
+                <p>GSTIN/UIN: <span className="font-black text-black">{data.buyer.gstin}</span></p>
+                <p>State Name: <span className="font-bold text-black">{data.buyer.stateName}</span>, Code: <span className="font-bold text-black">{data.buyer.stateCode}</span></p>
               </div>
             </div>
             <div className="col-span-5 p-2 flex flex-col h-full overflow-hidden">
@@ -394,7 +396,7 @@ export default function App() {
               <div className="border-r border-black w-8 py-1 flex items-center justify-center uppercase whitespace-nowrap">Sl<br/>No.</div>
               <div className="border-r border-black w-16 py-1 flex items-center justify-center uppercase">HSN/SAC</div>
               <div className="border-r border-black flex-1 py-1 flex items-center justify-center uppercase">Particulars</div>
-              <div className="border-r border-black w-16 py-1 flex items-center justify-center uppercase">TAX</div>
+              <div className="border-r border-black w-16 py-1 flex items-center justify-center uppercase"></div>
               
               {/* WEIGHT with KGS and GRAMS subheaders */}
               <div className="border-r border-black w-28 flex flex-col">
@@ -412,14 +414,14 @@ export default function App() {
               <div className="w-24 flex flex-col">
                 <div className="border-b border-black py-0.5 uppercase text-[9px] tracking-wider font-bold">Amount</div>
                 <div className="flex text-[9px] h-full items-stretch">
-                  <div className="border-r border-black w-18 py-0.5 flex items-center justify-center font-bold">Rs.</div>
+                  <div className="border-r border-black w-[72px] py-0.5 flex items-center justify-center font-bold">Rs.</div>
                   <div className="w-6 py-0.5 flex items-center justify-center font-bold">Ps.</div>
                 </div>
               </div>
             </div>
 
             {/* Table Body & Vertical Lines Container */}
-            <div className="flex-grow relative overflow-hidden">
+            <div className="flex-grow relative overflow-hidden flex flex-col">
               {/* Background vertical lines */}
               <div className="absolute inset-0 pointer-events-none flex">
                 <div className="border-r border-black w-8 h-full"></div>
@@ -430,12 +432,12 @@ export default function App() {
                 <div className="border-r border-black w-14 h-full"></div>
                 <div className="border-r border-black w-20 h-full"></div>
                 <div className="border-r border-black w-16 h-full"></div>
-                <div className="border-r border-black w-18 h-full"></div>
+                <div className="border-r border-black w-[72px] h-full"></div>
                 <div className="w-6 h-full"></div>
               </div>
 
               {/* Items Content */}
-              <div className="relative z-10 min-h-full font-serif flex flex-col justify-between">
+              <div className="relative z-10 flex-grow font-serif flex flex-col justify-between">
                 <div className="flex-grow">
                   {data.items.map((item, idx) => {
                     const kgsVal = parseFloat(item.kgs || '');
@@ -468,7 +470,7 @@ export default function App() {
                             const decimalPart = Math.round((itemTotal - integerPart) * 100);
                             return (
                               <>
-                                <div className="w-18 text-right pr-2 p-1 font-mono font-bold flex items-start justify-end pt-2">
+                                <div className="w-[72px] text-right pr-2 p-1 font-mono font-bold flex items-start justify-end pt-2">
                                   {itemTotal > 0 ? integerPart.toLocaleString('en-IN') : ''}
                                 </div>
                                 <div className="w-6 text-center p-1 font-mono font-bold flex items-start justify-center pt-2 font-black">
@@ -483,35 +485,73 @@ export default function App() {
                   })}
                 </div>
 
-                {/* Fixed Box for IGST, SGST, CGST options at the bottom of the tax column */}
-                <div className="border-t border-black bg-slate-50/20">
-                  <div className="flex items-stretch text-[10px] h-[54px]">
+                {/* CGST, SGST, IGST rows right above the TOTAL line */}
+                <div className="border-t border-black bg-white">
+                  {/* CGST Row */}
+                  <div className="flex items-stretch text-[10px] h-6 border-b border-black">
                     <div className="w-8 h-full border-r border-black"></div>
                     <div className="w-16 h-full border-r border-black"></div>
                     <div className="flex-1 h-full border-r border-black"></div>
-                    
-                    {/* Fixed box for CGST, SGST, IGST stacked */}
-                    <div className="w-16 h-full border-r border-black flex flex-col items-center justify-center font-bold text-[9px] select-none leading-tight uppercase bg-white">
-                      <div className="flex-grow w-full flex items-center justify-center">CGST</div>
-                      <div className="w-full border-t border-black"></div>
-                      <div className="flex-grow w-full flex items-center justify-center">SGST</div>
-                      <div className="w-full border-t border-black"></div>
-                      <div className="flex-grow w-full flex items-center justify-center">IGST</div>
-                    </div>
-                    
+                    <div className="w-16 h-full border-r border-black flex items-center justify-center font-bold text-[9px] uppercase">CGST</div>
                     <div className="w-14 h-full border-r border-black"></div>
                     <div className="w-14 h-full border-r border-black"></div>
                     <div className="w-20 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black flex items-center justify-center font-bold font-mono text-[9px]">
+                      {data.tax.cgstPercent > 0 ? `${data.tax.cgstPercent}%` : ''}
+                    </div>
+                    <div className="w-[72px] h-full border-r border-black flex items-center justify-end pr-2 font-mono font-bold">
+                      {totals.cgstAmount > 0 ? Math.floor(totals.cgstAmount).toLocaleString('en-IN') : ''}
+                    </div>
+                    <div className="w-6 h-full flex items-center justify-center font-mono font-bold text-[9px]">
+                      {totals.cgstAmount > 0 ? Math.round((totals.cgstAmount - Math.floor(totals.cgstAmount)) * 100).toString().padStart(2, '0') : ''}
+                    </div>
+                  </div>
+
+                  {/* SGST Row */}
+                  <div className="flex items-stretch text-[10px] h-6 border-b border-black">
+                    <div className="w-8 h-full border-r border-black"></div>
                     <div className="w-16 h-full border-r border-black"></div>
-                    <div className="w-18 h-full border-r border-black"></div>
-                    <div className="w-6 h-full"></div>
+                    <div className="flex-1 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black flex items-center justify-center font-bold text-[9px] uppercase">SGST</div>
+                    <div className="w-14 h-full border-r border-black"></div>
+                    <div className="w-14 h-full border-r border-black"></div>
+                    <div className="w-20 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black flex items-center justify-center font-bold font-mono text-[9px]">
+                      {data.tax.sgstPercent > 0 ? `${data.tax.sgstPercent}%` : ''}
+                    </div>
+                    <div className="w-[72px] h-full border-r border-black flex items-center justify-end pr-2 font-mono font-bold">
+                      {totals.sgstAmount > 0 ? Math.floor(totals.sgstAmount).toLocaleString('en-IN') : ''}
+                    </div>
+                    <div className="w-6 h-full flex items-center justify-center font-mono font-bold text-[9px]">
+                      {totals.sgstAmount > 0 ? Math.round((totals.sgstAmount - Math.floor(totals.sgstAmount)) * 100).toString().padStart(2, '0') : ''}
+                    </div>
+                  </div>
+
+                  {/* IGST Row */}
+                  <div className="flex items-stretch text-[10px] h-6">
+                    <div className="w-8 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black"></div>
+                    <div className="flex-1 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black flex items-center justify-center font-bold text-[9px] uppercase">IGST</div>
+                    <div className="w-14 h-full border-r border-black"></div>
+                    <div className="w-14 h-full border-r border-black"></div>
+                    <div className="w-20 h-full border-r border-black"></div>
+                    <div className="w-16 h-full border-r border-black flex items-center justify-center font-bold font-mono text-[9px]">
+                      {data.tax.igstPercent > 0 ? `${data.tax.igstPercent}%` : ''}
+                    </div>
+                    <div className="w-[72px] h-full border-r border-black flex items-center justify-end pr-2 font-mono font-bold">
+                      {totals.igstAmount > 0 ? Math.floor(totals.igstAmount).toLocaleString('en-IN') : ''}
+                    </div>
+                    <div className="w-6 h-full flex items-center justify-center font-mono font-bold text-[9px]">
+                      {totals.igstAmount > 0 ? Math.round((totals.igstAmount - Math.floor(totals.igstAmount)) * 100).toString().padStart(2, '0') : ''}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Total Row */}
-            <div className="flex border-t border-black font-bold h-7 items-center bg-white relative z-20">
+            <div className="flex border-t border-black font-bold h-7 items-stretch bg-white relative z-20">
               <div className="border-r border-black w-8 h-full"></div>
               <div className="border-r border-black w-16 h-full"></div>
               <div className="border-r border-black flex-1 h-full text-right pr-2 self-center pt-1 font-black uppercase text-[10px]">Total</div>
@@ -535,11 +575,11 @@ export default function App() {
                 const totalDec = Math.round((totals.total - totalInt) * 100);
                 return (
                   <>
-                    <div className="border-r border-black w-18 h-full text-right pr-2 flex items-center justify-end text-[10px] font-mono font-bold">
-                      {totalInt.toLocaleString('en-IN')}
+                    <div className="border-r border-black w-[72px] h-full text-right pr-2 flex items-center justify-end text-[10px] font-mono font-bold">
+                      {totals.total > 0 ? totalInt.toLocaleString('en-IN') : ''}
                     </div>
                     <div className="w-6 h-full text-center flex items-center justify-center text-[10px] font-mono font-bold">
-                      {totalDec.toString().padStart(2, '0')}
+                      {totals.total > 0 ? totalDec.toString().padStart(2, '0') : ''}
                     </div>
                   </>
                 );
@@ -548,77 +588,26 @@ export default function App() {
           </div>
 
           {/* Amount Chargeable Box */}
-          <div className="border border-t-0 border-black p-2 min-h-[60px] relative">
+          <div className="border border-black p-2 min-h-[60px] relative">
              <div className="flex justify-between items-start">
                <div className="flex-1">
                  <span className="italic text-[10px] font-bold">Amount Chargeable (in words)</span>
-                 <p className="font-black mt-1 uppercase text-sm leading-tight">{totals.totalInWords}</p>
+                 <p className="font-black mt-1 uppercase text-sm leading-tight">
+                    {totals.total === 0 || totals.totalInWords === 'Zero' ? '' : totals.totalInWords}
+                  </p>
                </div>
                <span className="italic font-bold text-[10px] absolute top-2 right-2">E. & O.E</span>
              </div>
           </div>
 
-          {/* Tax Breakdown Section */}
-          <div className="mt-1 border border-black overflow-hidden bg-white">
-            <table className="w-full border-collapse text-[10px] text-center font-bold">
-              <thead>
-                <tr className="border-b border-black">
-                  <th className="border-r border-black w-24 py-1" rowSpan={2}>HSN/SAC</th>
-                  <th className="border-r border-black w-24 py-1" rowSpan={2}>Taxable Value</th>
-                  {data.tax.igstPercent > 0 && <th className="border-r border-black py-0.5" colSpan={2}>Integrated Tax</th>}
-                  {(data.tax.cgstPercent > 0 || data.tax.sgstPercent > 0) && (
-                    <><th className="border-r border-black py-0.5" colSpan={2}>Central Tax</th><th className="border-r border-black py-0.5" colSpan={2}>State Tax</th></>
-                  )}
-                  <th className="py-1" rowSpan={2}>Total Tax Amount</th>
-                </tr>
-                <tr className="border-b border-black">
-                   {data.tax.igstPercent > 0 && <><th className="border-r border-black w-14 py-0.5">Rate</th><th className="border-r border-black w-24 py-0.5">Amount</th></>}
-                   {data.tax.cgstPercent > 0 && <><th className="border-r border-black w-14 py-0.5">Rate</th><th className="border-r border-black w-24 py-0.5">Amount</th></>}
-                   {data.tax.sgstPercent > 0 && <><th className="border-r border-black w-14 py-0.5">Rate</th><th className="border-r border-black w-24 py-0.5">Amount</th></>}
-                </tr>
-              </thead>
-              <tbody>
-                {data.items.slice(0, 1).map((item) => (
-                  <tr key={item.id} className="border-b border-black/10">
-                    <td className="border-r border-black py-1 h-6">{item.hsnSac || '---'}</td>
-                    <td className="border-r border-black text-right pr-2">{totals.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    {data.tax.igstPercent > 0 && <>
-                      <td className="border-r border-black">{data.tax.igstPercent}%</td>
-                      <td className="border-r border-black text-right pr-2">{totals.igstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    </>}
-                    {data.tax.cgstPercent > 0 && <>
-                      <td className="border-r border-black">{data.tax.cgstPercent}%</td>
-                      <td className="border-r border-black text-right pr-2">{totals.cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    </>}
-                    {data.tax.sgstPercent > 0 && <>
-                      <td className="border-r border-black">{data.tax.sgstPercent}%</td>
-                      <td className="border-r border-black text-right pr-2">{totals.sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    </>}
-                    <td className="text-right pr-2">{totals.totalTax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                  </tr>
-                ))}
-                <tr className="font-black border-t border-black bg-slate-50">
-                  <td className="border-r border-black text-right pr-2 py-0.5">Total</td>
-                  <td className="border-r border-black text-right pr-2">{totals.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                  {data.tax.igstPercent > 0 && <><td className="border-r border-black"></td><td className="border-r border-black text-right pr-2">{totals.igstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  {data.tax.cgstPercent > 0 && <><td className="border-r border-black"></td><td className="border-r border-black text-right pr-2">{totals.cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  {data.tax.sgstPercent > 0 && <><td className="border-r border-black"></td><td className="border-r border-black text-right pr-2">{totals.sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td></>}
-                  <td className="text-right pr-2">{totals.totalTax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <div className="mt-1 p-1 border-x border-b border-black">
-            <p className="text-[11px] leading-tight font-black uppercase">Tax Amount (in words) : {totals.taxInWords}</p>
-          </div>
 
           {/* Footer Footer */}
           <div className="mt-auto pt-10 flex flex-col">
             <div className="self-end w-[250px] border border-black p-2 flex flex-col items-center">
-                <span className="font-bold self-end text-[10px]">for {data.seller.name}</span>
+                <span className="self-end text-[10px] font-bold">for <span className="font-sans font-black text-[13px] uppercase tracking-normal text-black">{data.seller.name.toUpperCase()}</span></span>
                 <div className="h-16"></div>
-                <span className="text-[10px]">Authorised Signatory</span>
+                <span className="text-[10px] font-bold">Authorised Signatory</span>
             </div>
             <div className="text-center mt-6">
               <p className="text-[10px]">This is a Computer Generated Invoice</p>
